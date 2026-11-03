@@ -289,29 +289,40 @@
   </div>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/a/macros/spxexpress.com/s/AKfycbxrH0sEId6h7oECNu4Bs_xe0SZW1lX42ZKQTuT2ED36uecLz4RNSI5ctE6yL2Lc5tkn/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/a/macros/spxexpress.com/s/AKfycbyeqxfYi2-OEncVCMEPMu3gvWKxPNccflP9gDsNhGzz1HF1JogbTuNTkcRy-mVw2lhL/exec";
 
     let rawOtdRecords = [];
     let rawOttRecords = [];
     let otdChartInstance = null;
     let ottChartInstance = null;
 
-    async function loadCloudData() {
-      document.getElementById('syncStatus').innerText = "⏳ Memuat data dari Google Sheets...";
-      try {
-        const response = await fetch(GOOGLE_SCRIPT_URL);
-        const result = await response.json();
-        
-        if (result && result.otd && result.ott) {
-          rawOtdRecords = result.otd.map(r => ({ date: r[0], route: r[1], lt_route: r[2], status: r[3] }));
-          rawOttRecords = result.ott.map(r => ({ date: r[0], route: r[1], lt_route: r[2], status: r[3] }));
-          document.getElementById('syncStatus').innerText = "✓ Ter-sinkronisasi dengan Google Sheets";
-          updateDashboard();
-        }
-      } catch (err) {
-        console.error("Gagal sinkronisasi data Google Sheets:", err);
+    // --- INTEGRASI GOOGLE SHEETS VIA JSONP (MENEMBUS KEBIJAKAN DOMAIN PERUSAHAAN) ---
+    function handleJsonpResponse(result) {
+      if (result && result.otd && result.ott) {
+        rawOtdRecords = result.otd.map(r => ({ date: r[0], route: r[1], lt_route: r[2], status: r[3] }));
+        rawOttRecords = result.ott.map(r => ({ date: r[0], route: r[1], lt_route: r[2], status: r[3] }));
+        document.getElementById('syncStatus').innerText = "✓ Ter-sinkronisasi dengan Google Sheets";
+        updateDashboard();
+      } else {
         document.getElementById('syncStatus').innerText = "⚠️ Gagal terhubung ke Google Sheets API";
       }
+    }
+
+    function loadCloudData() {
+      document.getElementById('syncStatus').innerText = "⏳ Memuat data dari Google Sheets...";
+      
+      // Hapus tag script tua jika ada
+      const oldScript = document.getElementById('jsonp_script');
+      if (oldScript) oldScript.remove();
+
+      // Buat tag script baru untuk mengambil data via JSONP
+      const script = document.createElement('script');
+      script.id = 'jsonp_script';
+      script.src = `${GOOGLE_SCRIPT_URL}?callback=handleJsonpResponse&_=${new Date().getTime()}`;
+      script.onerror = function() {
+        document.getElementById('syncStatus').innerText = "⚠️ Gagal terhubung ke Google Sheets API";
+      };
+      document.body.appendChild(script);
     }
 
     async function sendToGoogleSheets(payload) {
@@ -319,6 +330,7 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST",
+          mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
