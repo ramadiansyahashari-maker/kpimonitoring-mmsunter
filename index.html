@@ -289,14 +289,15 @@
   </div>
 
   <script>
-    
-const GOOGLE_SCRIPT_URL = "https://script.google.com/a/macros/spxexpress.com/s/AKfycbxC490TwvqORyVMVefof60IAuDLZ9nimNN6Aa0IVsvU0qyXG0O68DKlQel_zsclVEgf/exec";
+    // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/a/macros/spxexpress.com/s/AKfycbxC490TwvqORyVMVefof60IAuDLZ9nimNN6Aa0IVsvU0qyXG0O68DKlQel_zsclVEgf/exec";
+
     let rawOtdRecords = [];
     let rawOttRecords = [];
     let otdChartInstance = null;
     let ottChartInstance = null;
 
-    // --- INTEGRASI GOOGLE SHEETS API ---
+    // --- INTEGRASI GOOGLE SHEETS API PERBAIKAN ---
     async function loadCloudData() {
       document.getElementById('syncStatus').innerText = "⏳ Memuat data dari Google Sheets...";
       try {
@@ -320,11 +321,11 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/a/macros/spxexpress.com/s/A
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
         document.getElementById('syncStatus').innerText = "✓ Data berhasil dikirim ke Google Sheets";
+        setTimeout(loadCloudData, 1500);
       } catch (err) {
         console.error("Gagal mengirim ke Google Sheets:", err);
         document.getElementById('syncStatus').innerText = "⚠️ Gagal menyimpan ke Google Sheets";
