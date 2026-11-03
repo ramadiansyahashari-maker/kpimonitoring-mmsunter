@@ -289,15 +289,13 @@
   </div>
 
   <script>
-    // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/a/macros/spxexpress.com/s/AKfycbz0Ii9NzVxDWznfmZ3yL8kuIm7hilFTTujvDrhdLaQ/dev";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/a/macros/spxexpress.com/s/AKfycbxrH0sEId6h7oECNu4Bs_xe0SZW1lX42ZKQTuT2ED36uecLz4RNSI5ctE6yL2Lc5tkn/exec";
 
     let rawOtdRecords = [];
     let rawOttRecords = [];
     let otdChartInstance = null;
     let ottChartInstance = null;
 
-    // --- INTEGRASI GOOGLE SHEETS API PERBAIKAN ---
     async function loadCloudData() {
       document.getElementById('syncStatus').innerText = "⏳ Memuat data dari Google Sheets...";
       try {
@@ -341,7 +339,6 @@
       alert("Database Google Sheets berhasil dibersihkan.");
     }
 
-    // --- HANDLER LOGIN & LOGOUT ---
     function handleLogin(e) {
       e.preventDefault();
       document.getElementById('loginSection').classList.add('hidden');
@@ -355,7 +352,6 @@
       document.getElementById('loginSection').classList.remove('hidden');
     }
 
-    // --- HANDLER UPLOAD DATA & APPEND ---
     function handleOtdUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
